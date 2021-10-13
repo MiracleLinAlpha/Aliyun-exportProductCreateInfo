@@ -1,13 +1,11 @@
 import api.Ecs_Api;
+import api.R_kvstore_Api;
 import api.Rds_Api;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import entity.diskInfo;
-import entity.ecsInfo;
-import entity.rdsInfo;
-import entity.requestParams;
+import entity.*;
 import org.omg.PortableInterceptor.DISCARDING;
 import util.ExcelUtils;
 import util.ProgressBar;
@@ -34,9 +32,8 @@ public class execute {
             ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "操作系统", "IP", "CPU核心数", "内存"
                     , "创建时间", "系统盘大小GB", "数据盘大小GB", "副数据盘大小GB"),false);
 
-            List<List<Object>> addToAll = handleEcs(rp);
             int count = 0;
-            for(List<Object> item:addToAll) {
+            for(List<Object> item:handleEcs(rp)) {
                 count++;
                 ExcelUtils.insertRow(item,count);
             }
@@ -47,16 +44,23 @@ public class execute {
             //RDS
             ExcelUtils.createSheet("RDS");
             ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "数据库类型", "数据库版本", "系列"
-                    , "CPU", "内存", "创建时间", "网络类型", "IP"),false);
+                    , "域名", "CPU", "内存", "创建时间", "网络类型"),false);
 
             //系列  ==  双机高可用版本  只读实例
             //网络类型 == 经典网络   专有网络
 
-
+            count = 0;
+            for(List<Object> item:handleRds(rp)) {
+                count++;
+                ExcelUtils.insertRow(item,count);
+            }
 
 
             //Redis
             ExcelUtils.createSheet("Redis");
+            ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "数据库版本", "系列", "域名", "端口号"
+                    , "CPU", "内存", "创建时间", "网络类型"),false);
+
 
             //VPC
             ExcelUtils.createSheet("VPC");
@@ -219,13 +223,74 @@ public class execute {
                 row.add(item.getDBInstanceDescription());
                 row.add(item.getDBInstanceId());
                 row.add(item.getEngine());
-                row.add(item.);
+                row.add(item.getEngineVersion());
                 row.add();
+                row.add(item.get);
                 row.add();
-                row.add();
+                row.add(u2l.utc2Local(item.getCreateTime(), "yyyy-MM-dd'T'HH:mm'Z'","yyyy-MM-dd HH:mm:ss"));
+                row.add(item.getConnectionMode());
                 row.add();
 
+                rowList.add(row);
+
             }
+
+            return rowList;
+
+//            ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "数据库类型", "数据库版本", "系列"
+//                    , "CPU", "内存", "创建时间", "网络类型", "IP"),false);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    public static List<List<Object>> handleRedis(requestParams rp) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+            //读取所有Redis信息，遍历为实体类
+            String temp = R_kvstore_Api.DescribeInstances(rp);
+            JsonNode redisjn = mapper.readTree(temp);
+            redisjn = redisjn.get("Instances").get("KVStoreInstance");
+
+
+            List<redisInfo> redisInfoList = new ArrayList<>();
+            for(redisInfo item:redisInfoList) {
+                redisInfo ri = new redisInfo();
+                ri = (redisInfo)mapper.readValue(item.toString(), redisInfo.class);
+                redisInfoList.add(ri);
+            }
+
+            //加入Object List
+            List<List<Object>> rowList = new ArrayList<>();
+            for(redisInfo item:redisInfoList) {
+                List<Object> row = new ArrayList<>();
+                row.add(item.getDepartmentName());
+                row.add(item.getInstanceName());
+                row.add(item.getInstanceId());
+                row.add(item.getEngineVersion()));
+                row.add(item.getNodeType());
+                row.add(item.getConnectionDomain());
+                row.add(item.get);
+                row.add();
+                row.add(u2l.utc2Local(item.getCreateTime(), "yyyy-MM-dd'T'HH:mm'Z'","yyyy-MM-dd HH:mm:ss"));
+                row.add(item.getNetworkType());
+
+                rowList.add(row);
+
+            }
+            //            ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "数据库版本", "系列", "域名", "端口号"
+//            , "CPU", "内存", "创建时间", "网络类型"),false);
+
+            return rowList;
+
 
 
 
@@ -235,4 +300,8 @@ public class execute {
 
         return null;
     }
+
+
+
+
 }
