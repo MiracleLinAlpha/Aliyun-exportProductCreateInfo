@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 public class diskInfo {
 	private String DetachedTime;
+	private String KMSKeyId;
 	private String Description;
 	private String Category;
 	private String ResourceGroupId;
@@ -16,6 +17,7 @@ public class diskInfo {
 	private int Department;
 	private String ExpiredTime;
 	private String ImageId;
+	private String StorageSetId;
 	private TagsEty Tags;
 
 	private int ResourceGroup;
@@ -26,11 +28,13 @@ public class diskInfo {
 	private String SourceSnapshotId;
 	private String ProductCode;
 	private String Device;
+	private String PerformanceLevel;
 	private boolean EnableAutomatedSnapshotPolicy;
 	private boolean DeleteWithInstance;
 	private boolean EnableAutoSnapshot;
 	private String AutoSnapshotPolicyId;
 	private String DiskName;
+	private String BdfId;
 	private DiskOperationLocksEty OperationLocks;
 
 	private boolean Portable;
@@ -47,44 +51,36 @@ public class diskInfo {
 		super();
 	}
 
-	@Override
-	public String toString() {
-		return "diskInfo{" +
-				"DetachedTime='" + DetachedTime + '\'' +
-				", Description='" + Description + '\'' +
-				", Category='" + Category + '\'' +
-				", ResourceGroupId='" + ResourceGroupId + '\'' +
-				", Encrypted=" + Encrypted +
-				", Size=" + Size +
-				", DeleteAutoSnapshot=" + DeleteAutoSnapshot +
-				", DiskChargeType='" + DiskChargeType + '\'' +
-				", Department=" + Department +
-				", ExpiredTime='" + ExpiredTime + '\'' +
-				", ImageId='" + ImageId + '\'' +
-				", Tags=" + Tags +
-				", ResourceGroup=" + ResourceGroup +
-				", Status='" + Status + '\'' +
-				", AttachedTime='" + AttachedTime + '\'' +
-				", ZoneId='" + ZoneId + '\'' +
-				", InstanceId='" + InstanceId + '\'' +
-				", SourceSnapshotId='" + SourceSnapshotId + '\'' +
-				", ProductCode='" + ProductCode + '\'' +
-				", Device='" + Device + '\'' +
-				", EnableAutomatedSnapshotPolicy=" + EnableAutomatedSnapshotPolicy +
-				", DeleteWithInstance=" + DeleteWithInstance +
-				", EnableAutoSnapshot=" + EnableAutoSnapshot +
-				", AutoSnapshotPolicyId='" + AutoSnapshotPolicyId + '\'' +
-				", DiskName='" + DiskName + '\'' +
-				", OperationLocks=" + OperationLocks +
-				", Portable=" + Portable +
-				", Type='" + Type + '\'' +
-				", MountInstances=" + MountInstances +
-				", CreationTime='" + CreationTime + '\'' +
-				", DepartmentName='" + DepartmentName + '\'' +
-				", RegionId='" + RegionId + '\'' +
-				", DiskId='" + DiskId + '\'' +
-				", ResourceGroupName='" + ResourceGroupName + '\'' +
-				'}';
+	public String getKMSKeyId() {
+		return KMSKeyId;
+	}
+
+	public void setKMSKeyId(String KMSKeyId) {
+		this.KMSKeyId = KMSKeyId;
+	}
+
+	public String getStorageSetId() {
+		return StorageSetId;
+	}
+
+	public void setStorageSetId(String storageSetId) {
+		StorageSetId = storageSetId;
+	}
+
+	public String getPerformanceLevel() {
+		return PerformanceLevel;
+	}
+
+	public void setPerformanceLevel(String performanceLevel) {
+		PerformanceLevel = performanceLevel;
+	}
+
+	public String getBdfId() {
+		return BdfId;
+	}
+
+	public void setBdfId(String bdfId) {
+		BdfId = bdfId;
 	}
 
 	public String getDetachedTime() {
