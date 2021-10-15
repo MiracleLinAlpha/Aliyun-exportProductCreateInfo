@@ -32,4 +32,31 @@ public class Rds_Api {
      	}
     }
 
+
+	public static String DescribeDBInstanceAttribute(requestParams rp, String instanceId, int department) {
+		try {
+			Map<String, Object> requestParams = new HashMap<String, Object>();
+			requestParams.put("action", "DescribeDBInstanceAttribute");
+			requestParams.put("product", "Rds");
+			requestParams.put("Version", "2014-08-15");
+			requestParams.put("RegionId", rp.getRegionId());
+			requestParams.put("AccessKeyId", rp.getAccessKeyId());
+			requestParams.put("AccessKeySecret", rp.getAccessKeySecret());
+
+			requestParams.put("DBInstanceId", instanceId);
+			requestParams.put("Department", department);
+
+
+			ASClient client = new ASClient();
+			client.addHeader("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)");
+			String result = client.doRequest(rp.getApiGateWay(), requestParams);
+
+//     		System.out.println("DescribeDBInstanceAttribute API Success!");
+			return result;
+		} catch (Exception e) {
+			System.out.println("DescribeDBInstanceAttribute API Error!");
+			e.printStackTrace();
+			return null;
+		}
+	}
 }
