@@ -6,15 +6,18 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility=JsonAutoDetect.Visibility.NONE)
 
 public class loginPolicyEty {
-    private String cuserId;
-    private boolean Default;
-    private boolean enable;
-    private int id;
     private List<ipRangesEty> ipRanges;
     private String muserId;
+    private boolean Default;
+    private int ownerOrganizationId;
+    private List<timeRangesEty> timeRanges;
+    private boolean enable;
     private String name;
     private String rule;
-    private List<timeRangesEty> timeRanges;
+    private int id;
+    private String cuserId;
+    private String lpId;
+    private String organizationVisibility;
 
     public loginPolicyEty() {
     }
@@ -89,5 +92,29 @@ public class loginPolicyEty {
 
     public void setTimeRanges(List<timeRangesEty> timeRanges) {
         this.timeRanges = timeRanges;
+    }
+
+    public int getOwnerOrganizationId() {
+        return ownerOrganizationId;
+    }
+
+    public void setOwnerOrganizationId(int ownerOrganizationId) {
+        this.ownerOrganizationId = ownerOrganizationId;
+    }
+
+    public String getLpId() {
+        return lpId;
+    }
+
+    public void setLpId(String lpId) {
+        this.lpId = lpId;
+    }
+
+    public String getOrganizationVisibility() {
+        return organizationVisibility;
+    }
+
+    public void setOrganizationVisibility(String organizationVisibility) {
+        this.organizationVisibility = organizationVisibility;
     }
 }

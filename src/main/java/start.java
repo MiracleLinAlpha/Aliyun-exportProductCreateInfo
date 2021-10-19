@@ -57,7 +57,7 @@ public class start {
                     choose = scan.next();
                     switch (choose) {
                         case "1":
-                            new execute().go(rp);
+                            new execute().testEty(rp);
                             return ;
                         case "2":
                             return;

@@ -6,16 +6,19 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility=JsonAutoDetect.Visibility.NONE)
 
 public class organizationEty {
-    private String alias;
-    private String cuserId;
-    private int id;
-    private boolean internal;
-    private String level;
     private String muserId;
-    private String name;
-    private int parentId;
+    private boolean internal;
     private List<String> supportRegionList;
+    private String level;
+    private String name;
+    private String alias;
     private String supportRegions;
+    private int id;
+    private String cuserId;
+    private String uuid;
+    private int parentId;
+
+
 
     public organizationEty() {
     }
@@ -98,5 +101,13 @@ public class organizationEty {
 
     public void setSupportRegions(String supportRegions) {
         this.supportRegions = supportRegions;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

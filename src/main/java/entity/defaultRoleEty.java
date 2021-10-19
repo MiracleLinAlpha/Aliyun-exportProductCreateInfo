@@ -4,19 +4,23 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility=JsonAutoDetect.Visibility.NONE)
 
 public class defaultRoleEty {
-    private boolean active;
-    private String code;
-    private String cuserId;
-    private boolean Default;
-    private String description;
-    private boolean enable;
-    private int id;
+    private String roleRange;
+    private String arId;
     private String muserId;
     private boolean rAMRole;
-    private long roleLevel;
-    private String roleName;
-    private String roleRange;
+    private String code;
+    private boolean active;
+    private String description;
     private String roleType;
+    private boolean Default;
+    private int ownerOrganizationId;
+    private boolean enable;
+    private String roleName;
+    private int id;
+    private long roleLevel;
+    private String cuserId;
+    private String organizationVisibility;
+
 
     public defaultRoleEty() {
     }
@@ -123,5 +127,29 @@ public class defaultRoleEty {
 
     public void setRoleType(String roleType) {
         this.roleType = roleType;
+    }
+
+    public String getArId() {
+        return arId;
+    }
+
+    public void setArId(String arId) {
+        this.arId = arId;
+    }
+
+    public int getOwnerOrganizationId() {
+        return ownerOrganizationId;
+    }
+
+    public void setOwnerOrganizationId(int ownerOrganizationId) {
+        this.ownerOrganizationId = ownerOrganizationId;
+    }
+
+    public String getOrganizationVisibility() {
+        return organizationVisibility;
+    }
+
+    public void setOrganizationVisibility(String organizationVisibility) {
+        this.organizationVisibility = organizationVisibility;
     }
 }
