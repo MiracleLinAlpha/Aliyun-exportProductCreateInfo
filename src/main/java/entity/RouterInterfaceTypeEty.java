@@ -8,9 +8,11 @@ public class RouterInterfaceTypeEty {
     private String OppositeInterfaceStatus;
     private String OppositeInterfaceId;
     private String OppositeRouterId;
+    private String Description;
     private String EndTime;
     private String RouterId;
     private String BusinessStatus;
+    private String Name;
     private int Department;
     private String OppositeRouterType;
     private int OppositeBandwidth;
@@ -31,8 +33,10 @@ public class RouterInterfaceTypeEty {
     private String DepartmentName;
     private String VpcInstanceId;
     private String OppositeInterfaceBusinessStatus;
+    private String OppositeAccessPointId;
     private String Spec;
     private String RouterInterfaceId;
+    private String HealthCheckTargetIp;
     private String ResourceGroupName;
 
     public RouterInterfaceTypeEty() {
@@ -269,4 +273,37 @@ public class RouterInterfaceTypeEty {
     public void setResourceGroupName(String resourceGroupName) {
         ResourceGroupName = resourceGroupName;
     }
+
+    public String getDescription() {
+        return Description;
+    }
+
+    public void setDescription(String description) {
+        Description = description;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String name) {
+        Name = name;
+    }
+
+    public String getOppositeAccessPointId() {
+        return OppositeAccessPointId;
+    }
+
+    public void setOppositeAccessPointId(String oppositeAccessPointId) {
+        OppositeAccessPointId = oppositeAccessPointId;
+    }
+
+    public String getHealthCheckTargetIp() {
+        return HealthCheckTargetIp;
+    }
+
+    public void setHealthCheckTargetIp(String healthCheckTargetIp) {
+        HealthCheckTargetIp = healthCheckTargetIp;
+    }
+
 }

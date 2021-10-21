@@ -20,8 +20,8 @@ public class highSpeedTunnelInfo {
         return DepartmentName;
     }
 
-    public void setDepartmentName(String DepartmentName) {
-        DepartmentName = DepartmentName;
+    public void setDepartmentName(String departmentName) {
+        DepartmentName = departmentName;
     }
 
     public String getVpcInstanceId() {

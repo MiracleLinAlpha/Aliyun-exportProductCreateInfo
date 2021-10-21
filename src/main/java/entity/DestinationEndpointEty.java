@@ -9,6 +9,7 @@ public class DestinationEndpointEty {
     private String InstanceID;
     private String InstanceType;
     private String EngineName;
+    private String InstanceId;
 
     public DestinationEndpointEty() {
     }
@@ -43,5 +44,24 @@ public class DestinationEndpointEty {
 
     public void setEngineName(String engineName) {
         EngineName = engineName;
+    }
+
+    public String getInstanceId() {
+        return InstanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        InstanceId = instanceId;
+    }
+
+    @Override
+    public String toString() {
+        return "DestinationEndpointEty{" +
+                "UserName='" + UserName + '\'' +
+                ", InstanceID='" + InstanceID + '\'' +
+                ", InstanceType='" + InstanceType + '\'' +
+                ", EngineName='" + EngineName + '\'' +
+                ", InstanceId='" + InstanceId + '\'' +
+                '}';
     }
 }

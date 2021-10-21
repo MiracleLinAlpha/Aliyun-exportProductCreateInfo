@@ -2,6 +2,8 @@ package entity;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
+import java.util.List;
+
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility=JsonAutoDetect.Visibility.NONE)
 
 public class slbInfo {
@@ -23,7 +25,7 @@ public class slbInfo {
     private String LoadBalancerStatus;
     private long CreateTimeStamp;
     private String MasterZoneId;
-    private TagEty Tags;
+    private List<TagEty> Tags;
     private String ResourceGroup;
     private String ResourceGroupName;
 
@@ -175,11 +177,11 @@ public class slbInfo {
         MasterZoneId = masterZoneId;
     }
 
-    public TagEty getTags() {
+    public List<TagEty> getTags() {
         return Tags;
     }
 
-    public void setTags(TagEty tags) {
+    public void setTags(List<TagEty> tags) {
         Tags = tags;
     }
 

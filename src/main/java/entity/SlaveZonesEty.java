@@ -8,8 +8,7 @@ import java.util.List;
 public class SlaveZonesEty {
     private List<String> SlaveZone;
 
-    public SlaveZonesEty(List<String> slaveZone) {
-        SlaveZone = slaveZone;
+    public SlaveZonesEty() {
     }
 
     public List<String> getSlaveZone() {

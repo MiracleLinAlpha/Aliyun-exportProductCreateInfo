@@ -18,7 +18,7 @@ public class userInfo {
 
     private String parentPk;
     private long lastLoginTime;
-    private userGroupsEty userGroups;
+    private List<userGroupsEty> userGroups;
 
     private List<userRoleEty> userRoles;
 
@@ -27,7 +27,7 @@ public class userInfo {
     private String loginName;
     private organizationEty organization;
 
-    private userGroupRolesEty userGroupRoles;
+    private List<userGroupRolesEty> userGroupRoles;
 
     private int id;
     private String mobileNationCode;
@@ -104,11 +104,11 @@ public class userInfo {
         this.lastLoginTime = lastLoginTime;
     }
 
-    public userGroupsEty getUserGroups() {
+    public List<userGroupsEty> getUserGroups() {
         return userGroups;
     }
 
-    public void setUserGroups(userGroupsEty userGroups) {
+    public void setUserGroups(List<userGroupsEty> userGroups) {
         this.userGroups = userGroups;
     }
 
@@ -152,11 +152,12 @@ public class userInfo {
         this.organization = organization;
     }
 
-    public userGroupRolesEty getUserGroupRoles() {
+
+    public List<userGroupRolesEty> getUserGroupRoles() {
         return userGroupRoles;
     }
 
-    public void setUserGroupRoles(userGroupRolesEty userGroupRoles) {
+    public void setUserGroupRoles(List<userGroupRolesEty> userGroupRoles) {
         this.userGroupRoles = userGroupRoles;
     }
 

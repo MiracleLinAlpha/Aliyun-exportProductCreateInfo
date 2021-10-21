@@ -196,6 +196,10 @@ public class execute {
             }
 
 
+
+            ExcelUtils.exportExcelToSameFolder("ProductInfo.xlsx");
+
+
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -310,22 +314,25 @@ public class execute {
             List<List<Object>> rowList = new ArrayList<>();
             for(rdsInfo item:rdsInfoList) {
                 temp = Rds_Api.DescribeDBInstanceAttribute(rp, item.getDBInstanceId(), item.getDepartment());
-                RdsInstanceInfo rii = (RdsInstanceInfo)mapper.readValue(mapper.readTree(temp).get("Items").get("DBInstance").toString(), RdsInstanceInfo.class);
+                RdsInstanceInfo rii = (RdsInstanceInfo)mapper.readValue(mapper.readTree(temp).get("Items").get("DBInstanceAttribute").get(0).toString(), RdsInstanceInfo.class);
 
                 List<Object> row = new ArrayList<>();
                 row.add(item.getDepartmentName());
                 row.add(item.getDBInstanceDescription());
                 row.add(item.getDBInstanceId());
-                row.add(u2l.utc2Local(item.getCreateTime(), "yyyy-MM-dd'T'HH:mm'Z'","yyyy-MM-dd HH:mm:ss"));
+                row.add(u2l.utc2Local(item.getCreateTime(), "yyyy-MM-dd'T'HH:mm:ss'Z'","yyyy-MM-dd HH:mm:ss"));
                 row.add(item.getEngine());
                 row.add(item.getEngineVersion());
                 row.add(rii.getCategory());
                 row.add(rii.getConnectionString());
                 row.add(rii.getPort());
                 row.add(rii.getDBInstanceCPU());
-                row.add(rii.getDBInstanceMemory());
+                row.add(rii.getDBInstanceMemory()/1024);
                 row.add(rii.getDBInstanceStorage());
-                row.add(item.getInstanceNetworkType());
+                if(item.getInstanceNetworkType().equals("VPC"))
+                    row.add("专有网络");
+                else
+                    row.add("经典网络");
 
                 rowList.add(row);
 
@@ -372,12 +379,18 @@ public class execute {
                 row.add(item.getDepartmentName());
                 row.add(item.getInstanceName());
                 row.add(item.getInstanceId());
-                row.add(u2l.utc2Local(item.getCreateTime(), "yyyy-MM-dd'T'HH:mm'Z'","yyyy-MM-dd HH:mm:ss"));
+                row.add(u2l.utc2Local(item.getCreateTime(), "yyyy-MM-dd'T'HH:mm:ss'Z'","yyyy-MM-dd HH:mm:ss"));
                 row.add(item.getEngineVersion());
                 row.add(item.getConnectionDomain());
                 row.add(item.getPort());
-                row.add(item.getNodeType());
-                row.add(item.getNetworkType());
+                if(item.getNodeType().equals("double"))
+                    row.add("双副本");
+                else
+                    row.add("null");
+                if(item.getNetworkType().equals("VPC"))
+                    row.add("专有网络");
+                else
+                    row.add("经典网络");
 
                 rowList.add(row);
 
@@ -425,7 +438,7 @@ public class execute {
                 row.add(item.getDepartmentName());
                 row.add(item.getVpcName());
                 row.add(item.getVpcId());
-                row.add(u2l.utc2Local(item.getCreationTime(), "yyyy-MM-dd'T'HH:mm'Z'","yyyy-MM-dd HH:mm:ss"));
+                row.add(u2l.utc2Local(item.getCreationTime(), "yyyy-MM-dd'T'HH:mm:ss'Z'","yyyy-MM-dd HH:mm:ss"));
                 row.add(item.getCidrBlock());
                 row.add(item.getVRouterId());
                 row.add(item.getRouterTableIds().getRouterTableIds().get(0));
@@ -475,10 +488,16 @@ public class execute {
                 row.add(item.getDepartmentName());
                 row.add(item.getLoadBalancerName());
                 row.add(item.getLoadBalancerId());
-                row.add(u2l.utc2Local(item.getCreateTime(), "yyyy-MM-dd'T'HH:mm'Z'","yyyy-MM-dd HH:mm:ss"));
+                row.add(u2l.utc2Local(item.getCreateTime(), "yyyy-MM-dd'T'HH:mm:ss'Z'","yyyy-MM-dd HH:mm:ss"));
                 row.add(item.getAddress());
-                row.add(item.getAddressType());
-                row.add(item.getNetworkType());
+                if(item.getAddressType().equals("intranet"))
+                    row.add("内网");
+                else
+                    row.add("公网");
+                if(item.getNetworkType().equals("classic"))
+                    row.add("经典网络");
+                else
+                    row.add("专有网络");
 
                 rowList.add(row);
             }
@@ -513,7 +532,8 @@ public class execute {
             for(JsonNode item:vpcjn) {
                 RouterInterfaceTypeEty rity = new RouterInterfaceTypeEty();
                 rity = (RouterInterfaceTypeEty)mapper.readValue(item.toString(), RouterInterfaceTypeEty.class);
-                RouterInterfaceTypeList.add(rity);
+                if(rity.getRouterType().equals("VRouter") && rity.getOppositeRouterType().equals("VRouter"))
+                    RouterInterfaceTypeList.add(rity);
             }
 
             List<highSpeedTunnelInfo> hstiList = new ArrayList<>();
@@ -549,7 +569,7 @@ public class execute {
                 row.add(item.getOppositeVpcInstanceId());
                 row.add(item.getOppositeDepartmentName());
                 row.add(item.getBandwidth());
-                row.add(u2l.utc2Local(item.getCreationTime(), "yyyy-MM-dd'T'HH:mm'Z'","yyyy-MM-dd HH:mm:ss"));
+                row.add(u2l.utc2Local(item.getCreationTime(), "yyyy-MM-dd'T'HH:mm:ss'Z'","yyyy-MM-dd HH:mm:ss"));
 
                 rowList.add(row);
             }
@@ -626,6 +646,7 @@ public class execute {
 
             //读取所有K8s信息，遍历为实体类
             String temp = K8s_Api.DescribeClusters(rp);
+            temp = temp.replace("ue\":[", "ues\":[");
             JsonNode k8sjn = mapper.readTree(temp);
 
             List<k8sInfo> k8sList = new ArrayList<>();
@@ -641,19 +662,25 @@ public class execute {
             for(k8sInfo item:k8sList) {
                 List<Object> row = new ArrayList<>();
 
-                row.add(item.getCluster_id());
                 row.add(item.getDepartmentName());
                 row.add(item.getName());
-                row.add(u2l.utc2Local(item.getCreated(), "yyyy-MM-dd'T'HH:mm'Z'","yyyy-MM-dd HH:mm:ss"));
+                row.add(item.getCluster_id());
+                row.add(u2l.utc2Local(item.getCreated(), "yyyy-MM-dd'T'HH:mm:ssXXX","yyyy-MM-dd HH:mm:ss"));
                 for(outputsEty Bitem:item.getOutputs()) {
-                    if(Bitem.getOutputKey().contains("Master")) {
-                        row.add(Bitem.getOutputValue());
+                    if(Bitem.getOutputKey().contains("MasterInstanceID")) {
+                        if(Bitem.getOutputValues() != null)
+                            row.add(Bitem.getOutputValues().toString());
+                        else
+                            row.add("null");
                         break;
                     }
                 }
                 for(outputsEty Bitem:item.getOutputs()) {
-                    if(Bitem.getOutputKey().contains("Node")) {
-                        row.add(Bitem.getOutputValue());
+                    if(Bitem.getOutputKey().contains("NodeInstanceID")) {
+                        if(Bitem.getOutputValues() != null)
+                            row.add(Bitem.getOutputValues().toString());
+                        else
+                            row.add("null");
                         break;
                     }
                 }
@@ -705,7 +732,10 @@ public class execute {
                 row.add(item.getDepartmentName());
                 row.add(item.getMigrationJobID());
                 row.add(item.getMigrationJobStatus());
-                row.add(item.getMigrationObject().getSynchronousObject().getDatabaseName());
+                if(item.getMigrationObject().getSynchronousObject().size() != 0)
+                    row.add(item.getMigrationObject().getSynchronousObject().get(0).getDatabaseName());
+                else
+                    row.add("null");
                 row.add(item.getSourceEndpoint().getInstanceType());
                 row.add(item.getDestinationEndpoint().getInstanceID());
 
@@ -767,6 +797,7 @@ public class execute {
 
             //读取所有DtsSynchronization信息，遍历为实体类
             String temp = Dts_Api.DescribeSynchronizationJobs(rp);
+//            temp.replace("InstanceId", "InstanceID");
             JsonNode Dtsjn = mapper.readTree(temp);
             Dtsjn = Dtsjn.get("SynchronizationInstances");
 
@@ -786,8 +817,8 @@ public class execute {
                 row.add(item.getSynchronizationJobId());
                 row.add(item.getSynchronizationJobName());
                 row.add(item.getStatus());
-                row.add(item.getSourceEndpoint().getInstanceID());
-                row.add(item.getDestinationEndpoint().getInstanceID());
+                row.add(item.getSourceEndpoint().getInstanceId());
+                row.add(item.getDestinationEndpoint().getInstanceId());
 
                 rowList.add(row);
             }
@@ -916,10 +947,28 @@ public class execute {
                 row.add(item.getDisplayName());
                 row.add(item.getLoginName());
                 row.add(item.getOrganization().getName());
-                row.add(item.getDefaultRole().getCode());
+                if(item.getRoles() != null) {
+                    List<String> roleList = new ArrayList<>();
+                    for(rolesEty Bitem:item.getRoles()) {
+                        if(Bitem.getCode().equals("ROLE_RESOURCE_USER")) {
+                            roleList.add("资源使用人");
+                        } else {
+                            String str[] = Bitem.getCode().split("_");
+                            roleList.add(str[1]);
+                        }
+                    }
+                    row.add(roleList.toString());
+                } else {
+                    row.add(" ");
+                }
                 row.add(item.getCellphoneNum());
                 row.add(item.getEmail());
-                row.add(item.getStatus());
+                if(item.getStatus().equals("ACTIVE")) {
+                    row.add("激活中");
+                } else {
+                    row.add(item.getStatus());
+                }
+
 
 
                 rowList.add(row);
@@ -939,7 +988,7 @@ public class execute {
 
     public static void testEty(requestParams rp) {
         try {
-            List<List<Object>> temp = handleAscmListUser(rp);
+            List<List<Object>> temp = handleRds(rp);
 
             for(List<Object> item:temp) {
                 System.out.println(item.toString());

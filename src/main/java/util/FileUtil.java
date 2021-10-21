@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileUtil {
 
@@ -78,5 +80,62 @@ public class FileUtil {
         }catch (Exception e) {
             return "false";
         }
+    }
+
+
+    public static List<String> listFileNameInDir(String dirPath) {
+        try {
+            File f = new File(dirPath);
+            if (!f.exists()) {
+                System.out.println(dirPath + " not exists");
+                return null;
+            }
+
+            File List[] = f.listFiles();
+
+            List<String> fileList = new ArrayList<>();
+            for (File item : List) {
+                fileList.add(item.getName());
+            }
+
+            return fileList;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String readFileToString(String path) {
+        try {
+            File conffile =new File(path);
+            if(conffile.exists() != true) {
+                return "false";
+            }
+            if(getFileDetector(path).equals("UTF-8")) {
+                InputStreamReader confrd = new InputStreamReader (new FileInputStream(conffile),"UTF-8");
+                BufferedReader confbf = new BufferedReader(confrd);
+                int ch = 0;
+                StringBuffer sb = new StringBuffer();
+                while((ch = confbf.read()) != -1) {
+                    sb.append((char) ch);
+                }
+
+                return sb.toString();
+            }
+
+            UnicodeReader confrd = new UnicodeReader(new FileInputStream(path), Charset.defaultCharset().name());
+            BufferedReader confbf = new BufferedReader(confrd);
+            int ch = 0;
+            StringBuffer sb = new StringBuffer();
+            while((ch = confbf.read()) != -1) {
+                sb.append((char) ch);
+            }
+
+            return sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "false";
     }
 }
