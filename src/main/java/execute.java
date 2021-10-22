@@ -43,11 +43,13 @@ public class execute {
 
             //RDS
             ExcelUtils.createSheet("RDS");
-            ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "创建时间", "数据库类型", "数据库版本", "系列"
-                    , "域名", "端口号", "CPU", "内存", "存储空间", "网络类型"),false);
+            ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "创建时间", "数据库类型", "数据库版本"
+                    , "实例类型", "域名", "端口号", "CPU", "内存", "存储空间", "网络类型"),false);
 
             //系列  ==  双机高可用版本  只读实例   三节点企业版
             //网络类型 == 经典网络 Classic  专有网络   VPC
+
+            ProgressBar.printProgress_doing();
 
             count = 0;
             for(List<Object> item:handleRds(rp)) {
@@ -66,6 +68,32 @@ public class execute {
                 count++;
                 ExcelUtils.insertRow(item,count);
             }
+
+            ProgressBar.printProgress_doing();
+
+
+
+            //OSS
+
+
+
+
+
+            ProgressBar.printProgress_doing();
+
+
+            //NAS
+            ExcelUtils.createSheet("NAS");
+            ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "创建时间", "容量大小GB", "协议类型"
+                    , "挂载点VPC"),false);
+
+            count = 0;
+            for(List<Object> item:handleNas(rp)) {
+                count++;
+                ExcelUtils.insertRow(item,count);
+            }
+
+
 
 
             //VPC
@@ -96,7 +124,7 @@ public class execute {
             }
 
 
-
+            ProgressBar.printProgress_doing();
 
 
             //高速通道
@@ -110,6 +138,7 @@ public class execute {
                 ExcelUtils.insertRow(item,count);
             }
 
+            ProgressBar.printProgress_doing();
 
             //MQ
             ExcelUtils.createSheet("MQ");
@@ -134,7 +163,39 @@ public class execute {
                 ExcelUtils.insertRow(item,count);
             }
 
-            //DTS
+            ProgressBar.printProgress_doing();
+
+
+
+            //SLS
+            ExcelUtils.createSheet("SLS");
+            ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "创建时间"
+                    ),false);
+
+            count = 0;
+            for(List<Object> item:handleSls(rp)) {
+                count++;
+                ExcelUtils.insertRow(item,count);
+            }
+
+
+
+            //ES
+            ExcelUtils.createSheet("ES");
+            ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "创建时间"
+            ),false);
+
+            count = 0;
+            for(List<Object> item:handleSls(rp)) {
+                count++;
+                ExcelUtils.insertRow(item,count);
+            }
+
+
+
+
+
+            //DTSMigration
             ExcelUtils.createSheet("DTS数据迁移");
             ExcelUtils.addHeader(Arrays.asList("组织", "实例ID", "状态", "数据库名", "源实例类型"
                     , "目的实例ID"),false);
@@ -145,7 +206,10 @@ public class execute {
                 ExcelUtils.insertRow(item,count);
             }
 
+            ProgressBar.printProgress_doing();
 
+
+            //DTSSubscription
             ExcelUtils.createSheet("DTS数据订阅");
             ExcelUtils.addHeader(Arrays.asList("组织", "实例ID", "状态", "数据库名", "实例类型"
                     ),false);
@@ -156,8 +220,10 @@ public class execute {
                 ExcelUtils.insertRow(item,count);
             }
 
+            ProgressBar.printProgress_doing();
 
 
+            //DTSSynchronization
             ExcelUtils.createSheet("DTS数据同步");
             ExcelUtils.addHeader(Arrays.asList("组织", "实例ID", "实例名", "状态", "源数据库", "目的数据库"
             ),false);
@@ -196,6 +262,7 @@ public class execute {
             }
 
 
+            ProgressBar.printProgress_doing();
 
             ExcelUtils.exportExcelToSameFolder("ProductInfo.xlsx");
 
@@ -233,7 +300,7 @@ public class execute {
             diskjn = diskjn.get("Disks").get("Disk");
 
             List<diskInfo> diskInfoList = new ArrayList<>();
-            for(diskInfo item:diskInfoList) {
+            for(JsonNode item:diskjn) {
                 diskInfo di = new diskInfo();
                 di = (diskInfo)mapper.readValue(item.toString(), diskInfo.class);
                 diskInfoList.add(di);
@@ -273,6 +340,8 @@ public class execute {
                         }
                     }
                 }
+//                "组织", "实例名称", "实例ID", "操作系统", "IP", "CPU核心数", "内存"
+//                        , "创建时间", "系统盘大小GB", "数据盘大小GB", "副数据盘大小GB"
 
                 rowList.add(row);
             }
@@ -323,7 +392,12 @@ public class execute {
                 row.add(u2l.utc2Local(item.getCreateTime(), "yyyy-MM-dd'T'HH:mm:ss'Z'","yyyy-MM-dd HH:mm:ss"));
                 row.add(item.getEngine());
                 row.add(item.getEngineVersion());
-                row.add(rii.getCategory());
+                if(rii.getDBInstanceType().equals("Primary"))
+                    row.add("主实例");
+                else if(rii.getDBInstanceType().equals("Readonly"))
+                    row.add("只读实例");
+                else
+                    row.add(rii.getDBInstanceType());
                 row.add(rii.getConnectionString());
                 row.add(rii.getPort());
                 row.add(rii.getDBInstanceCPU());
@@ -341,7 +415,7 @@ public class execute {
             return rowList;
 
 
-//     ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "创建时间", "数据库类型", "数据库版本", "系列"
+//     ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "创建时间", "数据库类型", "数据库版本", "实例类型"
 //                    , "域名", "端口号", "CPU", "内存", "存储空间", "网络类型"),false);
 
         }catch (Exception e){
@@ -361,6 +435,8 @@ public class execute {
 
             //读取所有Redis信息，遍历为实体类
             String temp = R_kvstore_Api.DescribeInstances(rp);
+            if(!temp.contains("Instances"))
+                return null;
             JsonNode redisjn = mapper.readTree(temp);
             redisjn = redisjn.get("Instances").get("KVStoreInstance");
 
@@ -398,6 +474,64 @@ public class execute {
 
 //            ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "创建时间", "数据库版本", "域名", "端口号"
 //                    , "架构类型", "网络类型"),false);
+            return rowList;
+
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    public static List<List<Object>> handleNas(requestParams rp) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+            //读取所有Redis信息，遍历为实体类
+            String temp = Nas_Api.DescribeFileSystems(rp);
+            if(!temp.contains("FileSystems"))
+                return null;
+            JsonNode nasjn = mapper.readTree(temp);
+            nasjn = nasjn.get("FileSystems").get("FileSystem");
+
+
+            List<NasInfo> nasInfoList = new ArrayList<>();
+            for(JsonNode item:nasjn) {
+                NasInfo ni = new NasInfo();
+                ni = (NasInfo)mapper.readValue(item.toString(), NasInfo.class);
+                nasInfoList.add(ni);
+            }
+
+            //加入Object List
+            List<List<Object>> rowList = new ArrayList<>();
+            for(NasInfo item:nasInfoList) {
+                List<Object> row = new ArrayList<>();
+                row.add(item.getDepartmentName());
+                row.add(item.getDescription());
+                row.add(item.getFileSystemId());
+                row.add(u2l.utc2Local(item.getCreateTime(), "yyyy-MM-dd'T'HH:mm:ss'Z'","yyyy-MM-dd HH:mm:ss"));
+                row.add(item.getVolumeSize()/1073741824);
+                row.add(item.getProtocolType());
+                List<String> mountVpc = new ArrayList<>();
+                for(MountTargetEty Bitem:item.getMountTargets().getMountTarget()) {
+                   if(Bitem.getStatus().equals("active"))
+                       mountVpc.add(Bitem.getVpcId());
+                }
+                row.add(mountVpc.toString());
+
+                rowList.add(row);
+
+            }
+
+//            "组织", "实例名称", "实例ID", "创建时间", "容量大小GB", "协议类型", "挂载点VPC"
+
             return rowList;
 
 
@@ -704,6 +838,57 @@ public class execute {
 
 
 
+    public static List<List<Object>> handleSls(requestParams rp) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+            //读取所有Redis信息，遍历为实体类
+            String temp = Sls_Api.ListProject(rp);
+            if(!temp.contains("projects"))
+                return null;
+            JsonNode slsjn = mapper.readTree(temp);
+            slsjn = slsjn.get("projects");
+
+
+            List<slsInfo> slsInfoList = new ArrayList<>();
+            for(JsonNode item:slsjn) {
+                slsInfo si = new slsInfo();
+                si = (slsInfo)mapper.readValue(item.toString(), slsInfo.class);
+                slsInfoList.add(si);
+            }
+
+            //加入Object List
+            List<List<Object>> rowList = new ArrayList<>();
+            for(slsInfo item:slsInfoList) {
+                List<Object> row = new ArrayList<>();
+                row.add(item.getDepartmentName());
+                row.add(item.getDescription());
+                row.add(item.getProjectName());
+                row.add(df.format(new Date(Long.parseLong(item.getCreateTime() + "000"))));
+
+                rowList.add(row);
+
+            }
+
+//            "组织", "实例名称", "实例ID", "创建时间"
+
+            return rowList;
+
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+
     public static List<List<Object>> handleDtsMigration(requestParams rp) {
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -988,7 +1173,7 @@ public class execute {
 
     public static void testEty(requestParams rp) {
         try {
-            List<List<Object>> temp = handleRds(rp);
+            List<List<Object>> temp = handleSls(rp);
 
             for(List<Object> item:temp) {
                 System.out.println(item.toString());
