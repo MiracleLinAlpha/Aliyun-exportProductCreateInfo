@@ -7,19 +7,17 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility=JsonAutoDetect.Visibility.NONE)
 
 public class MountInstancesEty {
-	private List<String> MountInstance;
+	private List<Object> MountInstance;
 
 	public MountInstancesEty() {
 		super();
 	}
 
-	public List<String> getMountInstance() {
+	public List<Object> getMountInstance() {
 		return MountInstance;
 	}
 
-	public void setMountInstance(List<String> mountInstance) {
+	public void setMountInstance(List<Object> mountInstance) {
 		MountInstance = mountInstance;
 	}
-	
-	
 }

@@ -3,11 +3,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import entity.armsInfo;
 import entity.requestParams;
+import util.ExcelUtils;
 import util.FileUtil;
 
 import java.io.IOException;
-import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class start {
 
@@ -47,7 +50,8 @@ public class start {
                     System.out.println("\n+ -- -- =>>用户:	" + displayName + "		<<\n");
                     System.out.println("\n---------------------------------------------------------\n");
                     System.out.println("\n---------------------------------------------------------\n");
-                    System.out.println("\n--支持的产品  ECS RDS Redis VPC SLB 高速通道 MQ K8S DTS ASCM组织列表 ASCM用户列表");
+                    System.out.println("\n--支持的产品  ECS RDS Redis NAS VPC SLB 高速通道 MQ K8S SLS ES DTS ");
+                    System.out.println("\n--支持的产品  OdpsProject Odps账号 Odps配额 ASCM组织列表 ASCM用户列表 ");
                     System.out.println("\n	请选择工具：\n");
                     System.out.println("+ -- -- =(1、开始		        )\n");
                     System.out.println("+ -- -- =(2、退出				)");
@@ -57,7 +61,7 @@ public class start {
                     choose = scan.next();
                     switch (choose) {
                         case "1":
-                            new execute().testEty(rp);
+                            new execute().go(rp);
                             return ;
                         case "2":
                             return;
@@ -103,4 +107,59 @@ public class start {
         new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
     }
 
+    public static class exportArms {
+        public static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        public static void main(String[] args) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+                mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
+                mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+                //读取配置文件
+                List<String> fileList = new FileUtil().listFileNameInDir(args[0]);
+
+                List<armsInfo> ailist = new ArrayList<>();
+                for(String item:fileList) {
+                    String dataJson = new FileUtil().readFileToString(args[0] + "\\" + item);
+                    JsonNode dataJn = mapper.readTree(dataJson);
+                    dataJn = dataJn.get("data");
+
+                    for(JsonNode Bitem:dataJn) {
+                        armsInfo ai = new armsInfo();
+                        ai = mapper.readValue(Bitem.toString(), armsInfo.class);
+
+                        String mid = item;
+                        String name[] = mid.split("\\.");
+                        ai.setOrgName(name[0]);
+                        ailist.add(ai);
+                    }
+                }
+
+
+                //创建表格
+                ExcelUtils.createExcel();
+                ExcelUtils.createSheet("ARMS");
+                ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "监控类型", "创建时间"),false);
+
+                int count = 0;
+                for(armsInfo item:ailist) {
+                    count++;
+                    List<Object> row = new ArrayList<>();
+                    row.add(item.getOrgName());
+                    row.add(item.getApplication().getAppName());
+                    row.add(item.getType());
+                    row.add(df.format(new Date(item.getApplication().getCreatetime())));
+
+                    ExcelUtils.insertRow(row,count);
+                }
+
+                ExcelUtils.exportExcelToSameFolder("Arms.xlsx");
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
 }

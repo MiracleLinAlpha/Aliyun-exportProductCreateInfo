@@ -182,7 +182,7 @@ public class execute {
 
             //ES
             ExcelUtils.createSheet("ES");
-            ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "创建时间"
+            ExcelUtils.addHeader(Arrays.asList("组织", "实例名称", "实例ID", "版本", "创建时间"
             ),false);
 
             count = 0;
@@ -230,6 +230,47 @@ public class execute {
 
             count = 0;
             for(List<Object> item:handleDtsSynchronization(rp)) {
+                count++;
+                ExcelUtils.insertRow(item,count);
+            }
+
+
+
+
+            //OdpsProject
+            ExcelUtils.createSheet("OdpsProject");
+            ExcelUtils.addHeader(Arrays.asList("组织", "Project名称", "描述", "创建时间", "创建人"
+            ),false);
+
+            count = 0;
+            for(List<Object> item:handleOdpsProject(rp)) {
+                count++;
+                ExcelUtils.insertRow(item,count);
+            }
+
+
+
+            //OdpsUser
+            ExcelUtils.createSheet("OdpsUser");
+            ExcelUtils.addHeader(Arrays.asList("组织", "用户名", "描述", "创建时间"
+            ),false);
+
+            count = 0;
+            for(List<Object> item:handleOdpsUser(rp)) {
+                count++;
+                ExcelUtils.insertRow(item,count);
+            }
+
+
+
+
+            //OdpsCU
+            ExcelUtils.createSheet("OdpsCU");
+            ExcelUtils.addHeader(Arrays.asList("组织", "配额组名称", "CU 数量", "共享范围", "集群名称"
+                ),false);
+
+            count = 0;
+            for(List<Object> item:handleOdpsCU(rp)) {
                 count++;
                 ExcelUtils.insertRow(item,count);
             }
@@ -889,6 +930,58 @@ public class execute {
 
 
 
+    public static List<List<Object>> handleEs(requestParams rp) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+            //读取所有Redis信息，遍历为实体类
+            String temp = Es_Api.ListInstance(rp);
+            if(!temp.contains("Result"))
+                return null;
+            JsonNode esjn = mapper.readTree(temp);
+            esjn = esjn.get("Result");
+
+
+            List<esInfo> esInfoList = new ArrayList<>();
+            for(JsonNode item:esjn) {
+                esInfo ei = new esInfo();
+                ei = (esInfo)mapper.readValue(item.toString(), esInfo.class);
+                esInfoList.add(ei);
+            }
+
+            //加入Object List
+            List<List<Object>> rowList = new ArrayList<>();
+            for(esInfo item:esInfoList) {
+                List<Object> row = new ArrayList<>();
+                row.add(item.getDepartmentName());
+                row.add(item.getDescription());
+                row.add(item.getInstanceId());
+                row.add(item.getEsVersion());
+                row.add(u2l.utc2Local(item.getCreatedAt(), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'","yyyy-MM-dd HH:mm:ss"));
+
+                rowList.add(row);
+
+            }
+
+//            "组织", "实例名称", "实例ID", "版本", "创建时间"
+
+            return rowList;
+
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+
     public static List<List<Object>> handleDtsMigration(requestParams rp) {
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -1020,6 +1113,168 @@ public class execute {
     }
 
 
+
+    public static List<List<Object>> handleOdpsProject(requestParams rp) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+            //读取所有Redis信息，遍历为实体类
+            String temp = Odps_Api.GetOdpsEngineList(rp, String.valueOf(1));
+            if(!temp.contains("data"))
+                return null;
+            JsonNode oajn = mapper.readTree(temp);
+            oajn = oajn.get("data");
+
+
+            List<OdpsEngineListInfo> odpsList = new ArrayList<>();
+            for(JsonNode item:oajn) {
+                OdpsEngineListInfo oi = new OdpsEngineListInfo();
+                oi = (OdpsEngineListInfo)mapper.readValue(item.toString(), OdpsEngineListInfo.class);
+                odpsList.add(oi);
+            }
+
+            //加入Object List
+            List<List<Object>> rowList = new ArrayList<>();
+            for(OdpsEngineListInfo item:odpsList) {
+                List<Object> row = new ArrayList<>();
+                row.add(item.getName());
+                row.add(item.getOdpsName());
+                row.add(item.getDescription());
+                row.add(df.format(new Date(item.getCtime())));
+                row.add(item.getCuserId());
+
+                rowList.add(row);
+
+            }
+
+//            "组织", "Project名称", "描述", "创建时间", "创建人"
+
+            return rowList;
+
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+
+    public static List<List<Object>> handleOdpsUser(requestParams rp) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+            //读取所有Redis信息，遍历为实体类
+            String temp = Odps_Api.GetOdpsUserList(rp, String.valueOf(1));
+            if(!temp.contains("data"))
+                return null;
+            JsonNode oajn = mapper.readTree(temp);
+            oajn = oajn.get("data");
+
+
+            List<OdpsUserListInfo> odpsList = new ArrayList<>();
+            for(JsonNode item:oajn) {
+                OdpsUserListInfo oi = new OdpsUserListInfo();
+                oi = (OdpsUserListInfo)mapper.readValue(item.toString(), OdpsUserListInfo.class);
+                odpsList.add(oi);
+            }
+
+            //加入Object List
+            List<List<Object>> rowList = new ArrayList<>();
+            for(OdpsUserListInfo item:odpsList) {
+                List<Object> row = new ArrayList<>();
+                row.add(item.getOrganizationName());
+                row.add(item.getUserName());
+                row.add(item.getDescription());
+                row.add(df.format(new Date(item.getCtime())));
+
+                rowList.add(row);
+
+            }
+
+//            "组织", "用户名", "描述", "创建时间"
+
+            return rowList;
+
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+
+    public static List<List<Object>> handleOdpsCU(requestParams rp) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
+            mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
+            mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+            //读取所有Redis信息，遍历为实体类
+            String temp = Odps_Api.ListOdpsCus(rp, String.valueOf(1));
+            if(!temp.contains("data"))
+                return null;
+            JsonNode oajn = mapper.readTree(temp);
+            oajn = oajn.get("data");
+
+
+            List<OdpsCusInfo> odpsList = new ArrayList<>();
+            for(JsonNode item:oajn) {
+                OdpsCusInfo oi = new OdpsCusInfo();
+                oi = (OdpsCusInfo)mapper.readValue(item.toString(), OdpsCusInfo.class);
+                odpsList.add(oi);
+            }
+
+            //加入Object List
+            List<List<Object>> rowList = new ArrayList<>();
+            for(OdpsCusInfo item:odpsList) {
+                List<Object> row = new ArrayList<>();
+                row.add(item.getDepartmentName());
+                row.add(item.getQuota_name());
+                row.add(item.getMax_cu());
+                if(item.getShared() == 1)
+                    row.add("本组织及下级组织共享");
+                else if(item.getShared() == 0)
+                    row.add("本资源集共享");
+                else
+                    row.add("本组织");
+                row.add(item.getCluster());
+
+                rowList.add(row);
+
+            }
+
+//            "组织", "配额组名称", "CU 数量", "共享范围", "集群名称"
+
+            return rowList;
+
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+
+
     public static List<List<Object>> handleAscmOrganizationTree(requestParams rp) {
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -1131,7 +1386,11 @@ public class execute {
 
                 row.add(item.getDisplayName());
                 row.add(item.getLoginName());
-                row.add(item.getOrganization().getName());
+                if(item.getOrganization() != null) {
+                    row.add(item.getOrganization().getName());
+                }
+                else
+                    row.add("null");
                 if(item.getRoles() != null) {
                     List<String> roleList = new ArrayList<>();
                     for(rolesEty Bitem:item.getRoles()) {
@@ -1173,7 +1432,7 @@ public class execute {
 
     public static void testEty(requestParams rp) {
         try {
-            List<List<Object>> temp = handleSls(rp);
+            List<List<Object>> temp = handleOdpsCU(rp);
 
             for(List<Object> item:temp) {
                 System.out.println(item.toString());
