@@ -2,10 +2,7 @@ package util;
 
 import org.mozilla.universalchardet.UniversalDetector;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,5 +134,29 @@ public class FileUtil {
             e.printStackTrace();
         }
         return "false";
+    }
+
+    public static void saveFileInSameDir(String filename, String dirname, String temp) {
+        try {
+            String jarpath = System.getProperty("java.class.path");
+            int firstIndex = jarpath.lastIndexOf(System.getProperty("path.separator")) + 1;
+            int lastIndex = jarpath.lastIndexOf(File.separator) + 1;
+            jarpath = jarpath.substring(firstIndex, lastIndex);
+
+            String dirPath = jarpath + "\\" + dirname;
+            File file=new File(dirPath);
+            if(!file.exists()){//如果文件夹不存在
+                file.mkdir();//创建文件夹
+            }
+
+            FileWriter fwriter = null;
+            fwriter = new FileWriter(dirPath + "\\" + filename);
+            fwriter.write(temp);
+            fwriter.flush();
+            fwriter.close();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

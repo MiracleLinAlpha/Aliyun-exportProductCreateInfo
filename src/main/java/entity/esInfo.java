@@ -39,7 +39,7 @@ public class esInfo {
     private int endTime;
     private List<Object> synonymsDicts;
     private boolean dedicateMaster;
-    private String warmNodeConfiguration;
+    private Object warmNodeConfiguration;
     private boolean advancedDedicateMaster;
     private String status;
     private String ResourceGroupName;
@@ -295,11 +295,11 @@ public class esInfo {
         this.dedicateMaster = dedicateMaster;
     }
 
-    public String getWarmNodeConfiguration() {
+    public Object getWarmNodeConfiguration() {
         return warmNodeConfiguration;
     }
 
-    public void setWarmNodeConfiguration(String warmNodeConfiguration) {
+    public void setWarmNodeConfiguration(Object warmNodeConfiguration) {
         this.warmNodeConfiguration = warmNodeConfiguration;
     }
 

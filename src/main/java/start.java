@@ -53,17 +53,21 @@ public class start {
                     System.out.println("\n--支持的产品  ECS RDS Redis NAS VPC SLB 高速通道 MQ K8S SLS ES DTS ");
                     System.out.println("\n--支持的产品  OdpsProject Odps账号 Odps配额 ASCM组织列表 ASCM用户列表 ");
                     System.out.println("\n	请选择工具：\n");
-                    System.out.println("+ -- -- =(1、开始		        )\n");
-                    System.out.println("+ -- -- =(2、退出				)");
+                    System.out.println("+ -- -- =(1、导出到Exce		        )\n");
+                    System.out.println("+ -- -- =(2、导出到Json		        )\n");
+                    System.out.println("+ -- -- =(3、退出				)");
                     System.out.println("----------------------------------------------------");
 //                    scan.nextLine();
 
                     choose = scan.next();
                     switch (choose) {
                         case "1":
-                            new execute().go(rp);
+                            new execute().goExcel(rp);
                             return ;
                         case "2":
+                            new execute().goJson(rp);
+                            return;
+                        case "3":
                             return;
                         default:
                             cls();

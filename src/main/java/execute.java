@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entity.*;
 import util.ExcelUtils;
+import util.FileUtil;
 import util.ProgressBar;
 import util.utc2Local;
 
@@ -19,7 +20,7 @@ public class execute {
     public static utc2Local u2l = new utc2Local();
     public static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public static void go(requestParams rp) {
+    public static void goExcel(requestParams rp) {
 
         try{
             //创建表格
@@ -186,7 +187,7 @@ public class execute {
             ),false);
 
             count = 0;
-            for(List<Object> item:handleSls(rp)) {
+            for(List<Object> item:handleEs(rp)) {
                 count++;
                 ExcelUtils.insertRow(item,count);
             }
@@ -324,6 +325,8 @@ public class execute {
 
             //读取所有ECS信息，遍历为实体类
             String temp = Ecs_Api.DescribeInstances(rp);
+            if(!temp.contains("Instances"))
+                return null;
             JsonNode ecsjn = mapper.readTree(temp);
             ecsjn = ecsjn.get("Instances").get("Instance");
 
@@ -408,6 +411,8 @@ public class execute {
 
             //读取所有RDS信息，遍历为实体类
             String temp = Rds_Api.DescribeDBInstances(rp);
+            if(!temp.contains("Items"))
+                return null;
             JsonNode rdsjn = mapper.readTree(temp);
             rdsjn = rdsjn.get("Items").get("DBInstance");
 
@@ -535,7 +540,7 @@ public class execute {
             mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-            //读取所有Redis信息，遍历为实体类
+            //读取所有Nas信息，遍历为实体类
             String temp = Nas_Api.DescribeFileSystems(rp);
             if(!temp.contains("FileSystems"))
                 return null;
@@ -595,6 +600,8 @@ public class execute {
 
             //读取所有Vpc信息，遍历为实体类
             String temp = Vpc_Api.DescribeVpcs(rp);
+            if(!temp.contains("Vpcs"))
+                return null;
             JsonNode vpcjn = mapper.readTree(temp);
             vpcjn = vpcjn.get("Vpcs").get("Vpc");
 
@@ -643,8 +650,10 @@ public class execute {
             mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-            //读取所有Vpc信息，遍历为实体类
+            //读取所有Slb信息，遍历为实体类
             String temp = Slb_Api.DescribeLoadBalancers(rp);
+            if(!temp.contains("LoadBalancers"))
+                return null;
             JsonNode slbjn = mapper.readTree(temp);
             slbjn = slbjn.get("LoadBalancers").get("LoadBalancer");
 
@@ -698,8 +707,10 @@ public class execute {
             mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-            //读取所有Vpc信息，遍历为实体类
+            //读取所有HighSpeedTunnel信息，遍历为实体类
             String temp = Vpc_Api.DescribeRouterInterfaces(rp);
+            if(!temp.contains("RouterInterfaceSet"))
+                return null;
             JsonNode vpcjn = mapper.readTree(temp);
             vpcjn = vpcjn.get("RouterInterfaceSet").get("RouterInterfaceType");
 
@@ -769,6 +780,8 @@ public class execute {
 
             //读取所有Mq信息，遍历为实体类
             String temp = Mq_Api.ConsoleInstanceList(rp);
+            if(!temp.contains("Data"))
+                return null;
             JsonNode mqjn = mapper.readTree(temp);
             mqjn = mqjn.get("Data");
 
@@ -821,6 +834,8 @@ public class execute {
 
             //读取所有K8s信息，遍历为实体类
             String temp = K8s_Api.DescribeClusters(rp);
+            if(!temp.contains("cluster_id"))
+                return null;
             temp = temp.replace("ue\":[", "ues\":[");
             JsonNode k8sjn = mapper.readTree(temp);
 
@@ -886,7 +901,7 @@ public class execute {
             mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-            //读取所有Redis信息，遍历为实体类
+            //读取所有Sls信息，遍历为实体类
             String temp = Sls_Api.ListProject(rp);
             if(!temp.contains("projects"))
                 return null;
@@ -937,7 +952,7 @@ public class execute {
             mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-            //读取所有Redis信息，遍历为实体类
+            //读取所有Es信息，遍历为实体类
             String temp = Es_Api.ListInstance(rp);
             if(!temp.contains("Result"))
                 return null;
@@ -991,6 +1006,8 @@ public class execute {
 
             //读取所有DtsMigration信息，遍历为实体类
             String temp = Dts_Api.DescribeMigrationJobs(rp);
+            if(!temp.contains("MigrationJobs"))
+                return null;
             JsonNode Dtsjn = mapper.readTree(temp);
             Dtsjn = Dtsjn.get("MigrationJobs").get("MigrationJob");
 
@@ -1043,6 +1060,8 @@ public class execute {
 
             //读取所有DtsSubscription信息，遍历为实体类
             String temp = Dts_Api.DescribeSubscriptionInstances(rp);
+            if(!temp.contains("SubscriptionInstances"))
+                return null;
             JsonNode Dtsjn = mapper.readTree(temp);
             Dtsjn = Dtsjn.get("SubscriptionInstances").get("SubscriptionInstance");
 
@@ -1075,6 +1094,8 @@ public class execute {
 
             //读取所有DtsSynchronization信息，遍历为实体类
             String temp = Dts_Api.DescribeSynchronizationJobs(rp);
+            if(!temp.contains("SynchronizationInstances"))
+                return null;
 //            temp.replace("InstanceId", "InstanceID");
             JsonNode Dtsjn = mapper.readTree(temp);
             Dtsjn = Dtsjn.get("SynchronizationInstances");
@@ -1121,7 +1142,7 @@ public class execute {
             mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-            //读取所有Redis信息，遍历为实体类
+            //读取所有OdpsProject信息，遍历为实体类
             String temp = Odps_Api.GetOdpsEngineList(rp, String.valueOf(1));
             if(!temp.contains("data"))
                 return null;
@@ -1173,7 +1194,7 @@ public class execute {
             mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-            //读取所有Redis信息，遍历为实体类
+            //读取所有OdpsUser信息，遍历为实体类
             String temp = Odps_Api.GetOdpsUserList(rp, String.valueOf(1));
             if(!temp.contains("data"))
                 return null;
@@ -1224,7 +1245,7 @@ public class execute {
             mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_DEFAULT);
             mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-            //读取所有Redis信息，遍历为实体类
+            //读取所有OdpsCU信息，遍历为实体类
             String temp = Odps_Api.ListOdpsCus(rp, String.valueOf(1));
             if(!temp.contains("data"))
                 return null;
@@ -1284,6 +1305,8 @@ public class execute {
 
             //读取所有AscmOrganizationTree信息，遍历为实体类
             String temp = Ascm_Api.GetOrganizationTree(rp);
+            if(!temp.contains("data"))
+                return null;
             JsonNode Ascmjn = mapper.readTree(temp);
             Ascmjn = Ascmjn.get("data").get("children");
 
@@ -1367,6 +1390,8 @@ public class execute {
 
             //读取所有AscmListUser信息，遍历为实体类
             String temp = Ascm_Api.ListUsers(rp);
+            if(!temp.contains("data"))
+                return null;
             temp.replace("default", "Default");
             JsonNode Ascmjn = mapper.readTree(temp);
             Ascmjn = Ascmjn.get("data");
@@ -1428,6 +1453,139 @@ public class execute {
 
         return null;
     }
+
+
+
+    public static void goJson(requestParams rp) {
+        try {
+
+            ProgressBar.printProgress_init();
+
+
+            //ECS
+            String temp = Ecs_Api.DescribeInstances(rp);
+            FileUtil.saveFileInSameDir("Ecs_DescribeInstances.json", "json", temp);
+
+            temp = Ecs_Api.DescribeDisks(rp);
+            FileUtil.saveFileInSameDir("Ecs_DescribeDisks.json", "json", temp);
+
+            ProgressBar.printProgress_doing();
+
+            //RDS
+            temp = Rds_Api.DescribeDBInstances(rp);
+            FileUtil.saveFileInSameDir("Rds_DescribeDBInstances.json", "json", temp);
+
+            //Redis
+            temp = R_kvstore_Api.DescribeInstances(rp);
+            FileUtil.saveFileInSameDir("Redis_DescribeInstances.json", "json", temp);
+
+            ProgressBar.printProgress_doing();
+
+            //Nas
+            temp = Nas_Api.DescribeFileSystems(rp);
+            FileUtil.saveFileInSameDir("Nas_DescribeFileSystems.json", "json", temp);
+
+            ProgressBar.printProgress_doing();
+
+            //VPC
+            temp = Vpc_Api.DescribeVpcs(rp);
+            FileUtil.saveFileInSameDir("Vpc_DescribeVpcs.json", "json", temp);
+
+
+            //Slb
+            temp = Sls_Api.ListProject(rp);
+            FileUtil.saveFileInSameDir("Slb_ListProject.json", "json", temp);
+
+            ProgressBar.printProgress_doing();
+
+            //HighSpeedTunnel
+            temp = Vpc_Api.DescribeRouterInterfaces(rp);
+            FileUtil.saveFileInSameDir("Vpc_DescribeRouterInterfaces.json", "json", temp);
+
+
+            //MQ
+            temp = Mq_Api.ConsoleInstanceList(rp);
+            FileUtil.saveFileInSameDir("MQ_ConsoleInstanceList.json", "json", temp);
+
+            ProgressBar.printProgress_doing();
+
+            //K8s
+            temp = K8s_Api.DescribeClusters(rp);
+            FileUtil.saveFileInSameDir("K8s_DescribeClusters.json", "json", temp);
+
+
+            //Sls
+            temp = Sls_Api.ListProject(rp);
+            FileUtil.saveFileInSameDir("Sls_ListProject.json", "json", temp);
+
+
+            ProgressBar.printProgress_doing();
+
+            //ES
+            temp = Es_Api.ListInstance(rp);
+            FileUtil.saveFileInSameDir("ES_ListInstance.json", "json", temp);
+
+
+
+            //DtsMigration
+            temp = Dts_Api.DescribeMigrationJobs(rp);
+            FileUtil.saveFileInSameDir("Dts_DescribeMigrationJobs.json", "json", temp);
+
+
+            ProgressBar.printProgress_doing();
+
+
+            //DtsSubscription
+            temp = Dts_Api.DescribeSubscriptionInstances(rp);
+            FileUtil.saveFileInSameDir("Dts_DescribeSubscriptionInstances.json", "json", temp);
+
+
+
+            //DtsSynchronization
+            temp = Dts_Api.DescribeSynchronizationJobs(rp);
+            FileUtil.saveFileInSameDir("Dts_DescribeSynchronizationJobs.json", "json", temp);
+
+
+
+
+            //OdpsProject
+            temp = Odps_Api.GetOdpsEngineList(rp, "1");
+            FileUtil.saveFileInSameDir("Odps_GetOdpsEngineList.json", "json", temp);
+
+
+
+            //OdpsUser
+            temp = Odps_Api.GetOdpsUserList(rp, "1");
+            FileUtil.saveFileInSameDir("Odps_GetOdpsUserList.json", "json", temp);
+
+
+
+
+            //OdpsCus
+            temp = Odps_Api.ListOdpsCus(rp, "1");
+            FileUtil.saveFileInSameDir("Odps_ListOdpsCus.json", "json", temp);
+
+            ProgressBar.printProgress_doing();
+
+            //AscmOrganizationTree
+            temp = Ascm_Api.GetOrganizationTree(rp);
+            FileUtil.saveFileInSameDir("Ascm_GetOrganizationTree.json", "json", temp);
+
+
+            ProgressBar.printProgress_doing();
+
+            //AscmUserList
+            temp = Ascm_Api.ListUsers(rp);
+            FileUtil.saveFileInSameDir("Ascm_ListUsers.json", "json", temp);
+
+            ProgressBar.printProgress_doing();
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
 
 
     public static void testEty(requestParams rp) {
